@@ -38,13 +38,20 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.rustyclipse.ui.preferences"
+            class="org.rustyclipse.ui.preferences.RustIDEPreferences"
+            id="rustyclipse.rustpreferences"
+            name="Rust">
+      </page>
+      <page
+            category="rustyclipse.rustpreferences"
+            class="org.rustyclipse.ui.preferences.RustPreferences"
             id="rustyclipse.rustpreferences"
             name="Rust Preferences">
       </page>
       <page
+            category="rustyclipse.rustpreferences"
             class="org.rustyclipse.ui.preferences.CargoPreferences"
-            id="org.rustyclipse.ui.preferences.cargopreferences"
+            id="rustyclipse.cargopreferences"
             name="Cargo Preferences">
       </page>
    </extension>
