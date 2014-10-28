@@ -16,6 +16,12 @@ public class RustyclipsePlugin extends AbstractUIPlugin {
 		return plugin;
 	}
 	
+	private static final String VERSION = "0.1.0";
+	
+	public static String getVersionText() {
+		return VERSION;
+	}
+	
 	@Override
 	public void start(BundleContext context) {
 		try {

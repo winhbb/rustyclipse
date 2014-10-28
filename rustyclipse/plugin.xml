@@ -35,5 +35,18 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.rustyclipse.ui.preferences"
+            id="rustyclipse.rustpreferences"
+            name="Rust Preferences">
+      </page>
+      <page
+            class="org.rustyclipse.ui.preferences.CargoPreferences"
+            id="org.rustyclipse.ui.preferences.cargopreferences"
+            name="Cargo Preferences">
+      </page>
+   </extension>
 
 </plugin>
