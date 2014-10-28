@@ -11,19 +11,19 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = RustyclipsePlugin.getDefault().getPreferenceStore();
-		String OS = System.getProperty("os.name");
+		String OS = System.getProperty("os.name").toLowerCase();
 		
 		if(OS.contains("win")) {
-			store.putValue(RustPreferences.RUST_C, "C:/Program Files (x86)/Rust/bin/");
+			store.setDefault(RustPreferences.RUST_C, "C:/Program Files (x86)/Rust/bin/");
 			store.putValue(CargoPreferences.CARGO_HOME, "C:/cargo/");
 		}
 		
 		else if(OS.contains("mac") || OS.contains("unix")) {
-			store.putValue(RustPreferences.RUST_C, "/usr/local/bin/");
-			store.putValue(CargoPreferences.CARGO_HOME, "/usr/local/bin/");
+			store.setDefault(RustPreferences.RUST_C, "/usr/local/bin/");
+			store.setDefault(CargoPreferences.CARGO_HOME, "/usr/local/bin/");
 		}
 		
-		store.putValue(RustPreferences.RUST_C_ARGS, "--out-dir bin");
+		store.setDefault(RustPreferences.RUST_C_ARGS, "--out-dir bin");
 	}
 
 }

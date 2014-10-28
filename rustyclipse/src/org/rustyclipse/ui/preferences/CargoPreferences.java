@@ -7,7 +7,8 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rustyclipse.RustyclipsePlugin;
 
 public class CargoPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage  {
@@ -17,11 +18,6 @@ public class CargoPreferences extends FieldEditorPreferencePage implements IWork
 	public CargoPreferences() {
 		super(FieldEditorPreferencePage.GRID);
 		setPreferenceStore(RustyclipsePlugin.getDefault().getPreferenceStore());
-		
-	}
-	
-	@Override
-	public void init(IWorkbench workbench) {
 	}
 
 	@Override
@@ -35,7 +31,13 @@ public class CargoPreferences extends FieldEditorPreferencePage implements IWork
 		Composite fieldParent = new Composite(group, SWT.NONE);
 		GridDataFactory.swtDefaults().grab(true, false).align(SWT.FILL, SWT.TOP).hint(150, -1).applyTo(fieldParent);
 		
-		addField(new DirectoryFieldEditor(CARGO_HOME, "Cargo Home: ", fieldParent));
+		DirectoryFieldEditor cargoHome = new DirectoryFieldEditor(CARGO_HOME, "Cargo Home:", fieldParent);
+		
+		addField(cargoHome);
 	}
 	
+	@Override
+	public void init(IWorkbench workbench) {
+	
+	}
 }

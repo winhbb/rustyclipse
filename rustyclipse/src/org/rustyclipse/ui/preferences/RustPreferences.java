@@ -28,11 +28,13 @@ public class RustPreferences extends FieldEditorPreferencePage implements IWorkb
 		GridDataFactory.swtDefaults().grab(true, false).align(SWT.FILL, SWT.TOP).hint(150, -1).applyTo(fieldParent);
 		
 		StringFieldEditor stringField = new StringFieldEditor(RUST_C_ARGS, "Runtime arguments:", fieldParent);
-		stringField.setEmptyStringAllowed(true);
-		stringField.setStringValue(RUST_C_ARGS);
+		stringField.setStringValue(getPreferenceStore().getString(RUST_C_ARGS));
+
+		DirectoryFieldEditor rustHome = new DirectoryFieldEditor(RUST_C, "Rust Compiler Home:", fieldParent);
+		rustHome.setStringValue(getPreferenceStore().getString(RUST_C));
 		
-		addField(new DirectoryFieldEditor(RUST_C, "&Rust Compiler Home:", fieldParent));
 		addField(stringField);
+		addField(rustHome);
 	}
 
 	@Override
