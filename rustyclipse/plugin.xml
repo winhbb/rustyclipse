@@ -65,9 +65,18 @@
             category="rustyclipse.rustcategory"
             class="org.rustyclipse.ui.wizards.NewRustFileWizard"
             finalPerspective="rustyclipse.rustperspective"
-            icon="icons/rust-icon.gif"
+            icon="icons/rust-icon2.gif"
             id="rustyclipse.newrsfile"
             name="New Rust File">
+      </wizard>
+      <wizard
+            category="rustyclipse.rustcategory"
+            class="org.rustyclipse.ui.wizards.NewRustProjectWizard"
+            finalPerspective="rustyclipse.rustperspective"
+            icon="icons/rust-icon2.gif"
+            id="rustyclipse.newrustproject"
+            name="New Rust Project"
+            project="true">
       </wizard>
    </extension>
    <extension
