@@ -13,5 +13,27 @@
             id="org.rustyclipse.ui.editors.RustEditor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.rustyclipse.ui.RustPerspectiveFactory"
+            icon="icons/rust-icon.gif"
+            id="rustyclipse.rustperspective"
+            name="Rust">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="rustyclipse.rustperspective">
+         <view
+               id="rustyclipse.consoleview"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.RustConsoleView"
+               visible="true">
+         </view>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>

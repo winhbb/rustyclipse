@@ -1,6 +1,7 @@
 package org.rustyclipse;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -13,7 +14,7 @@ public class RustyclipsePlugin extends AbstractUIPlugin {
 	public static final String PluginID = "org.rustyclipse";
 	
 	/** This plugin's preference store*/
-	public IPreferenceStore prefStore = plugin.getPreferenceStore();
+	public IPreferenceStore prefStore = new PreferenceStore();
 	
 	@Override
 	public void start(BundleContext context) {
