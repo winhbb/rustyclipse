@@ -1,6 +1,5 @@
 package org.rustyclipse.ui;
 
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.ui.*;
 import org.eclipse.ui.console.IConsoleConstants;
 

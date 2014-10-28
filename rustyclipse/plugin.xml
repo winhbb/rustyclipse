@@ -7,7 +7,7 @@
       <editor
             name="Rust Editor"
             extensions="rs"
-            icon="icons/sample.gif"
+            icon="icons/rust-icon.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.rustyclipse.ui.editors.RustEditor"
             id="org.rustyclipse.ui.editors.RustEditor">
@@ -54,6 +54,20 @@
             id="rustyclipse.cargopreferences"
             name="Cargo Preferences">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="rustyclipse.rustcategory"
+            name="Rust">
+      </category>
+      <wizard
+            class="org.rustyclipse.ui.wizards.NewRustFileWizard"
+            finalPerspective="rustyclipse.rustperspective"
+            icon="icons/rust-icon.gif"
+            id="rustyclipse.newrsfile"
+            name="New Rust File">
+      </wizard>
    </extension>
 
 </plugin>
