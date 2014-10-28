@@ -62,12 +62,36 @@
             name="Rust">
       </category>
       <wizard
+            category="rustyclipse.rustcategory"
             class="org.rustyclipse.ui.wizards.NewRustFileWizard"
             finalPerspective="rustyclipse.rustperspective"
             icon="icons/rust-icon.gif"
             id="rustyclipse.newrsfile"
             name="New Rust File">
       </wizard>
+   </extension>
+   <extension
+         id="sampleBuilder"
+         name="Sample Project Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="false"
+            hasNature="true"
+            isConfigurable="true"
+            supportsConfigurations="true">
+         <run
+               class="org.rustyclipse.RustBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="id1"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.rustyclipse.RustProjectNature">
+         </run>
+      </runtime>
    </extension>
 
 </plugin>

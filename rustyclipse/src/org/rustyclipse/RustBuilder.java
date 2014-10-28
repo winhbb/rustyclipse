@@ -11,7 +11,12 @@ public class RustBuilder extends IncrementalProjectBuilder {
 
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
-		
+		switch(kind) {
+			case INCREMENTAL_BUILD | AUTO_BUILD:
+				return null;
+			case CLEAN_BUILD | FULL_BUILD:
+				return null;
+		}
 		return null;
 	}
 

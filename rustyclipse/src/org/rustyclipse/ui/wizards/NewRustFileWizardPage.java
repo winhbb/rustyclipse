@@ -1,21 +1,13 @@
 package org.rustyclipse.ui.wizards;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 public class NewRustFileWizardPage extends WizardPage {
@@ -88,14 +80,13 @@ public class NewRustFileWizardPage extends WizardPage {
 		});
 		
 		setControl(container);
-		dialogChanged();
 	}
 	
 	private void dialogChanged() {
 		IResource fileHome = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(sourceFolderName.getText()));
 		
 		if(fileHome == null || (fileHome.getType() & (IResource.PROJECT | IResource.FILE)) == 0) {
-			updateStatus("Location is unavaiable");
+			updateStatus("Location is unavailable");
 			return;
 		} else if(!fileHome.isAccessible()) {
 			updateStatus("Unable to access folder location.");
