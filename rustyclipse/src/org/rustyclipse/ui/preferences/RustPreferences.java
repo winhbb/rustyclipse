@@ -27,8 +27,12 @@ public class RustPreferences extends FieldEditorPreferencePage implements IWorkb
 		Composite fieldParent = new Composite(group, SWT.NONE);
 		GridDataFactory.swtDefaults().grab(true, false).align(SWT.FILL, SWT.TOP).hint(150, -1).applyTo(fieldParent);
 		
+		StringFieldEditor stringField = new StringFieldEditor(RUST_C_ARGS, "Runtime arguments:", fieldParent);
+		stringField.setEmptyStringAllowed(true);
+		stringField.setLabelText(RUST_C_ARGS);
+		
 		addField(new DirectoryFieldEditor(RUST_C, "Rust Compiler Home:", fieldParent));
-		addField(new DirectoryFieldEditor(RUST_C_ARGS, "Rust Runtime Arguments:", fieldParent));
+		addField(stringField);
 	}
 
 	@Override
