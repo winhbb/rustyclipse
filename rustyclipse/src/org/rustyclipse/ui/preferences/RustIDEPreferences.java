@@ -1,8 +1,7 @@
 package org.rustyclipse.ui.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.*;
 import org.rustyclipse.RustyclipsePlugin;
 
 public class RustIDEPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage  {
@@ -13,14 +12,12 @@ public class RustIDEPreferences extends FieldEditorPreferencePage implements IWo
 	
 	@Override
 	public void init(IWorkbench workbench) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void createFieldEditors() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

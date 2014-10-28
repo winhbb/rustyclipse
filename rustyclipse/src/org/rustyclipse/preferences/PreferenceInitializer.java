@@ -22,6 +22,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			store.putValue(RustPreferences.RUST_C, "/usr/local/bin/");
 			store.putValue(CargoPreferences.CARGO_HOME, "/usr/local/bin/");
 		}
+		
+		store.putValue(RustPreferences.RUST_C_ARGS, "--out-dir bin");
 	}
 
 }
