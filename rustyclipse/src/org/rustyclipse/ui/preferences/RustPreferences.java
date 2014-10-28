@@ -29,9 +29,9 @@ public class RustPreferences extends FieldEditorPreferencePage implements IWorkb
 		
 		StringFieldEditor stringField = new StringFieldEditor(RUST_C_ARGS, "Runtime arguments:", fieldParent);
 		stringField.setEmptyStringAllowed(true);
-		stringField.setLabelText(RUST_C_ARGS);
+		stringField.setStringValue(RUST_C_ARGS);
 		
-		addField(new DirectoryFieldEditor(RUST_C, "Rust Compiler Home:", fieldParent));
+		addField(new DirectoryFieldEditor(RUST_C, "&Rust Compiler Home:", fieldParent));
 		addField(stringField);
 	}
 
