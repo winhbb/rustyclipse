@@ -1,5 +1,6 @@
 package org.rustyclipse;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 

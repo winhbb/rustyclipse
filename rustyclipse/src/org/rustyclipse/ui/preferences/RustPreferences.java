@@ -39,7 +39,6 @@ public class RustPreferences extends FieldEditorPreferencePage implements IWorkb
 
 	@Override
 	public void init(IWorkbench workbench) {
-		
 	}
 	
 	public static final String RUST_C = "rustCompilerHome";

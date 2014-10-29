@@ -30,6 +30,7 @@ public class RustPerspectiveFactory implements IPerspectiveFactory {
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");
 		layout.addNewWizardShortcut("org.eclipse.ui.editors.wizards.UntitledTextFileWizard");
 		layout.addNewWizardShortcut("rustyclipse.newrsfile");
+		layout.addNewWizardShortcut("rustyclipse.newrustproject");
 	}
 
 }
