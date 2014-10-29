@@ -4,12 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -22,8 +20,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.rustyclipse.RustyclipsePlugin;
-
 public class NewRustProjectWizardPage extends WizardPage {
 
 	private Composite container;
@@ -34,15 +30,15 @@ public class NewRustProjectWizardPage extends WizardPage {
 	private static Button useCargo;
 	private static Button createReadme;
 	
-	private IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName.getText());
+	private static IProject project;
 	private IFile mainFile;
-	
-	public static String getProjectName() {
-		return projectName.getText();
-	}
 	
 	public static String getVersionNumber() {
 		return version.getText();
+	}
+	
+	public static String getProjectName() {
+		return project.getName();
 	}
 	
 	public NewRustProjectWizardPage() {
@@ -59,14 +55,14 @@ public class NewRustProjectWizardPage extends WizardPage {
 		container = new Composite(parent, SWT.NONE);
 		container.setLayout(layout);
 		
-		layout.numColumns = 3;
+		layout.numColumns = 2;
 		layout.verticalSpacing = 5;
 		
 		Label label = new Label(container, SWT.NONE);
 		label.setText("Project name:");
 		
 		projectName = new Text(container, SWT.BORDER);
-		projectName.setText("Project " + getWSProjectCount());
+		projectName.setText("Project");
 		projectName.setLayoutData(gridData);
 		projectName.addModifyListener(new ModifyListener() {
 			@Override
@@ -90,7 +86,7 @@ public class NewRustProjectWizardPage extends WizardPage {
 		
 		useCargo = new Button(container, SWT.CHECK);
 		useCargo.setLayoutData(gridData);
-		useCargo.setText("Use Cargo:");
+		useCargo.setText("Use Cargo");
 		useCargo.setToolTipText("Highly adviced to use Cargo, as of it makes development in Rust easier.");
 		useCargo.setSelection(true);
 		useCargo.addSelectionListener(new SelectionListener() {
@@ -107,42 +103,55 @@ public class NewRustProjectWizardPage extends WizardPage {
 		createReadme = new Button(container, SWT.CHECK);
 		createReadme.setLayoutData(gridData);
 		createReadme.setText("Create Readme");
-		createReadme.setToolTipText("Create's a readme file for cargo to use.");
+		createReadme.setToolTipText("Creates a readme file for cargo to use.");
 		createReadme.setSelection(false);
 		
+		dialogChanged();
 		setControl(container);
 	}
 	
-	public void createProject() {
+	public boolean createProject() {
 		if(project != null) {
 			IProjectDescription desc = project.getWorkspace().newProjectDescription(project.getName());
 			try {
 				project.create(desc, null);
 				
-				if(project.isOpen()) {
+				if(!project.isOpen())
 					project.open(null);
-				}
 				
 				if(!project.getFolder("src").exists())
 					project.getFolder("src").create(false, true, null);
 				
+				if(!project.getFolder("bin").exists())
+					project.getFolder("bin").create(false, true, null);
 				
 				if(useCargo.getSelection())
 					if(!project.getFile("Cargo.toml").exists())
 						project.getFile("Cargo.toml").create(createCargoFile(), false, null);
 				
+				mainFile = project.getFolder("src").getFile("main.rs");
+				if(!mainFile.exists())
+					mainFile.create(createMainFile(), false, null);
+				
+				return true;
+				
 			} catch(CoreException e) {
+				updateStatus(e.getMessage());
 				e.printStackTrace();
+				return false;
 			}
 		}
+		return true;
 	}
 	
 	private InputStream createMainFile() {
 		StringBuilder content = new StringBuilder()
 			.append("mod main;")
-			.append(System.getProperty("line.separator"))
+			.append("\n\n")
 			.append("fn main() {")
-			.append("	println(\"Hello World!\");")
+			.append("\n")
+			.append("	println!(\"Hello World!\");")
+			.append("\n")
 			.append("}");
 		return new ByteArrayInputStream(content.toString().getBytes());
 	}
@@ -150,17 +159,20 @@ public class NewRustProjectWizardPage extends WizardPage {
 	private InputStream createCargoFile() {
 		StringBuilder content = new StringBuilder()
 			.append("[project]")
-			.append(System.getProperty("line.separator"))
+			.append("\n\n")
 			.append("name = \"" + projectName.getText() + "\"")
-			.append("version = \"" + version.getText() + "\"");
+			.append("\n")
+			.append("version = \"" + version.getText() + "\"")
+			.append("\n");
 		if(createReadme.getSelection()) {
-			content.append("readme = \"" + createReadme + "\"");
+			content.append("readme = \"" + createReadme() + "\"");
 		}
-		content.append(System.getProperty("line.separator"))
+		content.append("\n\n")
 			.append("[[bin]]")
-			.append(System.getProperty("line.separator"))
-			.append("name = \"")
-			.append("path = \"");
+			.append("\n\n")
+			.append("name = \"" + "" + "\"")
+			.append("\n")
+			.append("path = \"" + "" + "\"");
 		return new ByteArrayInputStream(content.toString().getBytes());
 	}
 	
@@ -170,12 +182,16 @@ public class NewRustProjectWizardPage extends WizardPage {
 		return new ByteArrayInputStream(builder.toString().getBytes());
 	}
 	
-	private String createReadme() throws CoreException {
+	private String createReadme() {
 		String readmeString = "README.md";
 		IFile readmeFile = project.getFile(readmeString);
 		
 		if(!readmeFile.exists())
-			readmeFile.create(readmeStream(), false, null);
+			try {
+				readmeFile.create(readmeStream(), false, null);
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
 		return readmeString;
 	}
 
@@ -183,26 +199,22 @@ public class NewRustProjectWizardPage extends WizardPage {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName.getText());
 		if(projectName.getText() == null || projectName.getText().length() == 0) {
 			updateStatus("Project name can't be empty.");
+		} else if(project.getWorkspace().getRoot().getProject(projectName.getText()).exists()) {
+			updateStatus("Project already exists.");
 		}
+		
 		if(useCargo.getSelection()) {
 			createReadme.setEnabled(true);
+		} else if(!useCargo.getSelection()) {
+			createReadme.setEnabled(false);
 		}
+		
 		updateStatus(null);
 	}
 	
 	private void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
-	}
-	
-	private int getWSProjectCount() {
-		IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(ResourcesPlugin.getWorkspace().getRoot().getFullPath());
-		try {
-			return folder.members().length;
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		return 0;
 	}
 	
 }

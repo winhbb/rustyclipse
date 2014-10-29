@@ -26,8 +26,7 @@ public class NewRustProjectWizard extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
-
-		return false;
+		return pageFile.createProject();
 	}
 
 }

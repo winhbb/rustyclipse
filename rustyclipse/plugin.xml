@@ -7,7 +7,7 @@
       <editor
             name="Rust Editor"
             extensions="rs"
-            icon="icons/rust-icon.gif"
+            icon="icons/rust-icon2.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.rustyclipse.ui.editors.RustEditor"
             id="org.rustyclipse.ui.editors.RustEditor">
@@ -17,7 +17,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.rustyclipse.ui.RustPerspectiveFactory"
-            icon="icons/rust-icon.gif"
+            icon="icons/rust-icon2.gif"
             id="rustyclipse.rustperspective"
             name="Rust">
       </perspective>

@@ -1,7 +1,13 @@
 package org.rustyclipse.ui.editors;
 
 import org.eclipse.jface.text.TextAttribute;
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IWhitespaceDetector;
+import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
+import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.rules.WhitespaceRule;
+import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
 
 public class RustyScanner extends RuleBasedScanner {
@@ -10,7 +16,8 @@ public class RustyScanner extends RuleBasedScanner {
 	Token comment;
 	Token string;
 	
-	private String[] keywords = {"as",
+	private String[] keywords = {
+								"as",
 								"break",
 								"crate",
 								"else", "enum", "extern",
@@ -23,19 +30,11 @@ public class RustyScanner extends RuleBasedScanner {
 								"self", "static", "struct", "super",
 								"true", "trait", "type",
 								"unsafe", "use",
-								"while"};
+								"while"
+								};
 	
 	public RustyScanner() {
-		WordRule rule = new WordRule(new IWordDetector() {
-			@Override
-			public boolean isWordStart(char c) {
-				return Character.isJavaIdentifierPart(c);
-			}
-			@Override
-			public boolean isWordPart(char c) {
-				return Character.isJavaIdentifierPart(c);
-			}
-		});
+		WordRule rule = new WordRule(new RustWordDetector());
 		
 		keyword = new Token(new TextAttribute(RustyColorConstants.KEYWORD, null, SWT.BOLD));
 		string = new Token(new TextAttribute(RustyColorConstants.STRING));

@@ -1,5 +1,6 @@
 package org.rustyclipse.ui.editors;
 
+import org.eclipse.jface.text.DefaultTextDoubleClickStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
@@ -24,7 +25,7 @@ public class RustyConfiguration extends SourceViewerConfiguration {
 	
 	@Override
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String documentType) {
-		return new RustyDoubleClickStrategy();
+		return new DefaultTextDoubleClickStrategy();
 	}
 	
 	@Override
