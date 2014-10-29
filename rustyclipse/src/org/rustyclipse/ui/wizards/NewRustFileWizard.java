@@ -26,8 +26,7 @@ public class NewRustFileWizard extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
-		
-		return false;
+		return pageFile.createFile();
 	}
 
 }

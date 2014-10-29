@@ -1,6 +1,10 @@
 package org.rustyclipse.ui.wizards;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
@@ -9,6 +13,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
+import org.rustyclipse.RustyclipsePlugin;
 
 public class NewRustFileWizardPage extends WizardPage {
 
@@ -80,17 +85,62 @@ public class NewRustFileWizardPage extends WizardPage {
 		});
 		
 		setControl(container);
+		dialogChanged();
+	}
+	
+	private String getMod(String[] loc) {
+		if(loc.length == 1) {
+			return "main";
+		} else {
+			return loc[loc.length - 1];
+		}
+	}
+	
+	private InputStream createRustFile() {
+		StringBuilder content = new StringBuilder()
+			.append("mod " + getMod(sourceFolderName.getText().split("/")) + ";")
+			.append("\n\n")
+			.append("fn main() {")
+			.append("\n")
+			.append("	println!(\"Hello World!\");")
+			.append("\n")
+			.append("}");
+		return new ByteArrayInputStream(content.toString().getBytes());
+	}
+	
+	public boolean createFile() {
+		try {
+			IProject project = RustyclipsePlugin.getActiveProject();
+			IFolder folder = project.getFolder(sourceFolderName.getText());
+			
+			if(!folder.exists())
+				folder.create(false, true, null);
+			
+			IFile file = folder.getFile(fileName.getText());
+			if(file.exists()) {
+				updateStatus("File with the name " + fileName.getText() + " already exists.");
+				return false;
+			}
+			else if (!file.exists())
+				file.create(createRustFile(), false, null);
+			
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	private void dialogChanged() {
-		IResource fileHome = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(sourceFolderName.getText()));
+		IProject project = RustyclipsePlugin.getActiveProject();
+		IFile file = project.getFolder(sourceFolderName.getText()).getFile(getFileName());
 		
-		if(fileHome == null || (fileHome.getType() & (IResource.PROJECT | IResource.FILE)) == 0) {
-			updateStatus("Location is unavailable");
-			return;
-		} else if(!fileHome.isAccessible()) {
-			updateStatus("Unable to access folder location.");
-			return;
+		if(file.exists()) {
+			updateStatus("File at the location already exists.");
+		}
+		
+		if(!fileName.getText().endsWith(".rs")) {
+			updateStatus("Must end with .rs");
 		}
 		
 		if(fileName.getText() == null || fileName.getText().length() == 0) {
@@ -111,7 +161,8 @@ public class NewRustFileWizardPage extends WizardPage {
 		if(dialog.open() == Window.OK) {
 			Object[] results = dialog.getResult();
 			if(results.length == 1)
-				text.setText(((Path) results[0]).toString());
+				if(results[0].toString().startsWith("/" + RustyclipsePlugin.getActiveProject().getName() + "/"))
+					text.setText(((Path) results[0]).toString().substring(9));
 		}
 	}
 	

@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.rustyclipse.RustyclipsePlugin;
 public class NewRustProjectWizardPage extends WizardPage {
 
 	private Composite container;
@@ -125,13 +126,14 @@ public class NewRustProjectWizardPage extends WizardPage {
 				if(!project.getFolder("bin").exists())
 					project.getFolder("bin").create(false, true, null);
 				
-				if(useCargo.getSelection())
-					if(!project.getFile("Cargo.toml").exists())
-						project.getFile("Cargo.toml").create(createCargoFile(), false, null);
-				
 				mainFile = project.getFolder("src").getFile("main.rs");
 				if(!mainFile.exists())
 					mainFile.create(createMainFile(), false, null);
+				RustyclipsePlugin.getDefault().getPreferenceStore().putValue("mainFile", "/src/main.rs");
+				
+				if(useCargo.getSelection())
+					if(!project.getFile("Cargo.toml").exists())
+						project.getFile("Cargo.toml").create(createCargoFile(), false, null);
 				
 				return true;
 				
@@ -170,9 +172,9 @@ public class NewRustProjectWizardPage extends WizardPage {
 		content.append("\n\n")
 			.append("[[bin]]")
 			.append("\n\n")
-			.append("name = \"" + "" + "\"")
+			.append("name = \"" + "main" + "\"")
 			.append("\n")
-			.append("path = \"" + "" + "\"");
+			.append("path = \"" + RustyclipsePlugin.getDefault().getPreferenceStore().getString("mainFile") + "\"");
 		return new ByteArrayInputStream(content.toString().getBytes());
 	}
 	

@@ -7,8 +7,6 @@ public class RustyContentAssistProcessor implements IContentAssistProcessor {
 
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-		IDocument document = viewer.getDocument();
-		
 		return null;
 	}
 
