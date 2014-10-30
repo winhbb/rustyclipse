@@ -114,6 +114,7 @@ public class NewRustProjectWizardPage extends WizardPage {
 	public boolean createProject() {
 		if(project != null) {
 			IProjectDescription desc = project.getWorkspace().newProjectDescription(project.getName());
+			desc.setNatureIds(new String[] {});
 			try {
 				project.create(desc, null);
 				

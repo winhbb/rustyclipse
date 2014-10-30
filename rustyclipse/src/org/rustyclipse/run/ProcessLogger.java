@@ -10,11 +10,11 @@ import org.rustyclipse.RustyclipsePlugin;
 public class ProcessLogger extends Thread {
 
 	InputStream is;
-	String type;
+	boolean error;
 	
-	public ProcessLogger(InputStream is, String type) {
+	public ProcessLogger(InputStream is, boolean error) {
 		this.is = is;
-		this.type = type;
+		this.error = error;
 	}
 	
 	public void run() {
@@ -23,7 +23,11 @@ public class ProcessLogger extends Thread {
 			BufferedReader br = new BufferedReader(isr);
 			String line = null;
 			while(( line = br.readLine()) != null) {
-				RustyclipsePlugin.getConsole().log(type + ">" + line);
+				if(error) {
+					RustyclipsePlugin.getConsole().errorLog(line);
+				} else {
+					RustyclipsePlugin.getConsole().log(line);	
+				}
 			}
 		} catch(IOException e) {
 			e.printStackTrace();

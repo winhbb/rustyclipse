@@ -1,22 +1,14 @@
 package org.rustyclipse.run;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.ISelectionService;
 import org.rustyclipse.RustyclipsePlugin;
 
 public class RustRunner extends AbstractHandler {
@@ -76,21 +68,51 @@ public class RustRunner extends AbstractHandler {
 		
 	}
 	
-	private String getMainFile() {
+	public static void run() {
 		try {
-			IFile cargoFile = RustyclipsePlugin.getActiveProject().getFile("Cargo.toml");
-			FileReader cargoStream = new FileReader(new File(cargoFile.getRawLocationURI().toString()));
-			BufferedReader reader = new BufferedReader(cargoStream);
-			String line = null;
-			while((line = reader.readLine()) != null) {
-				if(line == "[[bin]]") {
-					
-				}
-			}
-		} catch (IOException e) {
+			compile();
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		return null;
+	}
+	
+	private static boolean compile() throws IOException, InterruptedException {
+		IFile mainFile = RustyclipsePlugin.getActiveProject().getFolder("src").getFile("main.rs");
+		if(mainFile != null) {
+			String[] cmd = new String[3];
+			String OS = System.getProperty("os.name").toLowerCase();
+			
+			if(OS.contains("win")) {
+				cmd[0] = "rustc";
+				cmd[1] = mainFile.getLocation().toString();
+				cmd[2] = "";
+			}
+			Runtime rt = Runtime.getRuntime();
+			Process proc = rt.exec(cmd);
+			
+			ProcessLogger eLogger = new ProcessLogger(proc.getErrorStream(), true);
+			ProcessLogger oLogger = new ProcessLogger(proc.getInputStream(), false);
+			
+			eLogger.start();
+			oLogger.start();
+			
+			if(proc.waitFor() == 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static boolean compileCargo() {
+		IFile cargoFile = RustyclipsePlugin.getActiveProject().getFile("Cargo.toml");
+		if(!cargoFile.exists()) {
+			RustyclipsePlugin.getConsole().errorLog("You fucked up");
+			return false;
+		}
+		
+		return false;
 	}
 	
 }

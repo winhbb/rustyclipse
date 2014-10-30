@@ -1,12 +1,15 @@
 package org.rustyclipse.ui.preferences;
 
-import org.eclipse.jface.layout.*;
-import org.eclipse.jface.preference.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-
-import org.eclipse.ui.*;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rustyclipse.RustyclipsePlugin;
 
 public class RustPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {

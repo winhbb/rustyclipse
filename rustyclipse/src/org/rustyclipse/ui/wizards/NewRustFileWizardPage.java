@@ -75,7 +75,7 @@ public class NewRustFileWizardPage extends WizardPage {
 		labelFileName.setText("File Name:");
 		
 		fileName = new Text(container, SWT.BORDER);
-		fileName.setText("new_file.rs");
+		fileName.setText("main.rs");
 		fileName.setLayoutData(gridData);
 		fileName.addModifyListener(new ModifyListener() {
 			@Override

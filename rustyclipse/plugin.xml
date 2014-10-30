@@ -80,8 +80,8 @@
       </wizard>
    </extension>
    <extension
-         id="sampleBuilder"
-         name="Sample Project Builder"
+         id="rustBuilder"
+         name="Rust Builder"
          point="org.eclipse.core.resources.builders">
       <builder
             callOnEmptyDelta="false"
@@ -94,13 +94,17 @@
       </builder>
    </extension>
    <extension
-         id="id1"
+         id="rustNatures"
+         name="Rust Natures"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
                class="org.rustyclipse.RustProjectNature">
          </run>
       </runtime>
+      <builder
+            id="rustyclipse.rustBuilder">
+      </builder>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -111,12 +115,50 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            categoryId="org.eclipse.debug.ui.category.run"
+            categoryId="rustyclipse.commands.category"
             defaultHandler="org.rustyclipse.run.RustRunner"
             description="Run and compile the project"
             id="rustyclipse.runrustcommand"
             name="Run Rust">
       </command>
+      <category
+            description="Rust Commands"
+            id="rustyclipse.commands.category"
+            name="Rust Commands">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.rustyclipse.run.RustRunner"
+            commandId="rustyclipse.runrust">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="rustyclipse.product"
+            description="Rust IDE"
+            name="Rustyclipse">
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="rustyclipse.toolbarcommands">
+            <command
+                  commandId="rustyclipse.runrustcommand"
+                  icon="icons/rust-icon2.gif"
+                  id="rustyclipse.toolbar.rust"
+                  label="Run &amp; Compile"
+                  style="push"
+                  tooltip="Run &amp; Compile rust projects">
+            </command>
+         </toolbar>
+      </menuContribution>
    </extension>
 
 </plugin>
