@@ -111,6 +111,10 @@
       <initializer
             class="org.rustyclipse.preferences.PreferenceInitializer">
       </initializer>
+      <scope
+            class="org.eclipse.core.internal.resources.ProjectPreferences"
+            name="rustyclipse.projectpreferences">
+      </scope>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

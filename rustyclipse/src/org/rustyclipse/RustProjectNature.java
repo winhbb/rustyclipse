@@ -1,6 +1,5 @@
 package org.rustyclipse;
 
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
@@ -10,33 +9,14 @@ public class RustProjectNature implements IProjectNature {
 
 	IProject project;
 	
+	public static final String NATURE_ID = "org.rustyclipse.rustynature";
+	
 	@Override
 	public void configure() throws CoreException {
-		IProjectDescription projDesc = project.getDescription();
-		ICommand[] commands = projDesc.getBuildSpec();
-		for(int i = 0; i < commands.length; i++) {
-			if(commands[i].getBuilderName().contains(RustBuilder.BUILDER_ID)) {
-				break;
-			}
-		}
-		ICommand newCommand = projDesc.newCommand();
-		newCommand.setBuilderName(RustBuilder.BUILDER_ID);
-		commands[commands.length] = newCommand;
-		projDesc.setBuildSpec(commands);
 	}
 
 	@Override
 	public void deconfigure() throws CoreException {
-		IProjectDescription projDesc = project.getDescription();
-		ICommand[] commands = projDesc.getBuildSpec();
-		ICommand[] newCommands = new ICommand[commands.length];
-		for (int i = 0; i < commands.length; i++) {
-			if(commands[i].getBuilderName().equals(RustBuilder.BUILDER_ID)) {
-				newCommands[i] = commands[i];
-			}
-		}
-		projDesc.setBuildSpec(newCommands);
-		project.setDescription(projDesc, null);
 	}
 
 	@Override
@@ -49,4 +29,13 @@ public class RustProjectNature implements IProjectNature {
 		this.project = project;
 	}
 
+	public static void addNature(IProject project) throws CoreException {
+		IProjectDescription desc = project.getDescription();
+		String[] natures = desc.getNatureIds();
+		String[] newNatures = new String[natures.length + 1];
+		System.arraycopy(natures, 0, newNatures, 0, natures.length);
+		newNatures[natures.length] = NATURE_ID;
+		project.setDescription(desc, null);
+	}
+	
 }

@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.rustyclipse.RustProjectNature;
 import org.rustyclipse.RustyclipsePlugin;
 public class NewRustProjectWizardPage extends WizardPage {
 
@@ -33,14 +34,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 	
 	private static IProject project;
 	private IFile mainFile;
-	
-	public static String getVersionNumber() {
-		return version.getText();
-	}
-	
-	public static String getProjectName() {
-		return project.getName();
-	}
 	
 	public NewRustProjectWizardPage() {
 		super("New Rust project");
@@ -111,10 +104,10 @@ public class NewRustProjectWizardPage extends WizardPage {
 		setControl(container);
 	}
 	
-	public boolean createProject() {
+	public boolean createProject() throws CoreException {
 		if(project != null) {
 			IProjectDescription desc = project.getWorkspace().newProjectDescription(project.getName());
-			desc.setNatureIds(new String[] {});
+			RustProjectNature.addNature(project);
 			try {
 				project.create(desc, null);
 				
@@ -137,7 +130,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 						project.getFile("Cargo.toml").create(createCargoFile(), false, null);
 				
 				return true;
-				
 			} catch(CoreException e) {
 				updateStatus(e.getMessage());
 				e.printStackTrace();

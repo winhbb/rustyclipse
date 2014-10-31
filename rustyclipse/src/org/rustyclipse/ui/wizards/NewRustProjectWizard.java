@@ -1,5 +1,6 @@
 package org.rustyclipse.ui.wizards;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
@@ -26,7 +27,12 @@ public class NewRustProjectWizard extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
-		return pageFile.createProject();
+		try {
+			return pageFile.createProject();
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
