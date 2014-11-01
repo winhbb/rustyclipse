@@ -111,10 +111,6 @@
       <initializer
             class="org.rustyclipse.preferences.PreferenceInitializer">
       </initializer>
-      <scope
-            class="org.eclipse.core.internal.resources.ProjectPreferences"
-            name="rustyclipse.projectpreferences">
-      </scope>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -163,6 +159,26 @@
             </command>
          </toolbar>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.rustyclipse.ui.preferences.ProjectPropertyPage"
+            id="rustyclipse.projectpropertypage"
+            name="Rust"
+            objectClass="org.eclipse.core.resources.IProject">
+         <enabledWhen>
+            <iterate
+                  operator="or">
+               <instanceof
+                     value="org.eclipse.core.resources.IProjectNature">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+            </iterate>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

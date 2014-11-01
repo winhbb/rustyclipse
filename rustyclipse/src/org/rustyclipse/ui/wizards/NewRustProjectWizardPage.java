@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rustyclipse.RustProjectNature;
 import org.rustyclipse.RustyclipsePlugin;
+import org.rustyclipse.ui.util.ProjectUtils;
 public class NewRustProjectWizardPage extends WizardPage {
 
 	private Composite container;
@@ -43,8 +44,11 @@ public class NewRustProjectWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		GridLayout layout = new GridLayout();
+		GridLayout layout = new GridLayout(4, true);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		
+		GridData textData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		textData.horizontalSpan = 3;
 		
 		container = new Composite(parent, SWT.NONE);
 		container.setLayout(layout);
@@ -57,7 +61,7 @@ public class NewRustProjectWizardPage extends WizardPage {
 		
 		projectName = new Text(container, SWT.BORDER);
 		projectName.setText("Project");
-		projectName.setLayoutData(gridData);
+		projectName.setLayoutData(textData);
 		projectName.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
@@ -69,7 +73,7 @@ public class NewRustProjectWizardPage extends WizardPage {
 		versionLabel.setText("Version:");
 		
 		version = new Text(container, SWT.BORDER);
-		version.setLayoutData(gridData);
+		version.setLayoutData(textData);
 		version.setText("1.0.0");
 		version.addModifyListener(new ModifyListener() {
 			@Override
@@ -107,7 +111,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 	public boolean createProject() throws CoreException {
 		if(project != null) {
 			IProjectDescription desc = project.getWorkspace().newProjectDescription(project.getName());
-			RustProjectNature.addNature(project);
 			try {
 				project.create(desc, null);
 				
@@ -128,6 +131,11 @@ public class NewRustProjectWizardPage extends WizardPage {
 				if(useCargo.getSelection())
 					if(!project.getFile("Cargo.toml").exists())
 						project.getFile("Cargo.toml").create(createCargoFile(), false, null);
+				
+				RustProjectNature.addNature(project);
+				
+				ProjectUtils.setMainFileLocation(project, "/src/main.rs");
+				ProjectUtils.setProjectName(project, projectName.getText());
 				
 				return true;
 			} catch(CoreException e) {
