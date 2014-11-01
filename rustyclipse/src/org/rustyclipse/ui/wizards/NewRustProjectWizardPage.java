@@ -124,7 +124,7 @@ public class NewRustProjectWizardPage extends WizardPage {
 				if(!project.getFolder("src").exists())
 					project.getFolder("src").create(false, true, null);
 				
-				if(useCargo.getSelection()) {
+				if(!useCargo.getSelection()) {
 					binFolder = project.getFolder("bin");
 					if(!binFolder.exists())
 						project.getFolder("bin").create(false, true, null);

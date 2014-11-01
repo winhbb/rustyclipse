@@ -38,14 +38,15 @@ public class RustRunner extends AbstractHandler {
 		IResource resource = (IResource) (editor.getEditorInput().getAdapter(IResource.class));
 		IProject project = resource.getProject();
 		
-		if(getCompilationType(project) == RUST)
+		if(getCompilationType(project) == RUST) {
 			if(compile(project) == 0) {
 				run(project);	
 			}
-		else
+		} else if(getCompilationType(project) == CARGO) {
 			if(cargoCompile(project) == 0) {
 				cargoRun(project);	
 			}
+		}
 		return null;
 	}
 
@@ -88,13 +89,13 @@ public class RustRunner extends AbstractHandler {
 	
 	private int cargoCompile(IProject project) {
 		try {
-			String command = "cargo compile";
+			String command = "cargo build";
 			
 			PumpStreamHandler handler = new PumpStreamHandler();
 			
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
-			exec.setWorkingDirectory(new File(project.getRawLocation().toString()));
+			exec.setWorkingDirectory(new File(project.getLocation().toString()));
 			exec.setStreamHandler(handler);
 			
 			int exitValue = exec.execute(cmdLine);
@@ -147,7 +148,7 @@ public class RustRunner extends AbstractHandler {
 	}
 
 	private int getCompilationType(IProject project) {
-		if(!project.getFile("Cargo.toml").exists()) {
+		if(project.getFile("Cargo.toml").exists()) {
 			return CARGO;
 		} else {
 			return RUST;
