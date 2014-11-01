@@ -13,7 +13,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
-import org.rustyclipse.RustyclipsePlugin;
+import org.rustyclipse.ui.util.ProjectUtils;
 
 public class NewRustFileWizardPage extends WizardPage {
 
@@ -110,7 +110,7 @@ public class NewRustFileWizardPage extends WizardPage {
 	
 	public boolean createFile() {
 		try {
-			IProject project = RustyclipsePlugin.getActiveProject();
+			IProject project = ProjectUtils.getActiveProject();
 			IFolder folder = project.getFolder(sourceFolderName.getText());
 			
 			if(!folder.exists())
@@ -132,7 +132,7 @@ public class NewRustFileWizardPage extends WizardPage {
 	}
 	
 	private void dialogChanged() {
-		IProject project = RustyclipsePlugin.getActiveProject();
+		IProject project = ProjectUtils.getActiveProject();
 		IFile file = project.getFolder(sourceFolderName.getText()).getFile(getFileName());
 		
 		if(file.exists()) {
@@ -161,7 +161,7 @@ public class NewRustFileWizardPage extends WizardPage {
 		if(dialog.open() == Window.OK) {
 			Object[] results = dialog.getResult();
 			if(results.length == 1)
-				if(results[0].toString().startsWith("/" + RustyclipsePlugin.getActiveProject().getName() + "/"))
+				if(results[0].toString().startsWith("/" + ProjectUtils.getActiveProject().getName() + "/"))
 					text.setText(((Path) results[0]).toString().substring(9));
 		}
 	}

@@ -33,17 +33,17 @@ public class RustMessageConsole {
 	}
 	
 	public void log(String message) {
-		messageStream.setColor(black);
+		//messageStream.setColor(black);
 		messageStream.println(message);
 	}
 	
 	public void errorLog(String message) {
-		messageStream.setColor(red);
+		//messageStream.setColor(red);
 		messageStream.println(message);
 	}
 	
 	public void warningLog(String message) {
-		messageStream.setColor(yellow);
+		//messageStream.setColor(yellow);
 		messageStream.println(message);
 	}
 	

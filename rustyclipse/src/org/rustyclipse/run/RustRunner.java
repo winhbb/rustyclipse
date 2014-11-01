@@ -1,8 +1,10 @@
 package org.rustyclipse.run;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -37,11 +39,13 @@ public class RustRunner extends AbstractHandler {
 		IProject project = resource.getProject();
 		
 		if(getCompilationType(project) == RUST)
-			if(compile(project) == 0)
-				run(project);
+			if(compile(project) == 0) {
+				run(project);	
+			}
 		else
-			if(cargoCompile(project) == 0)
-				cargoRun(project);
+			if(cargoCompile(project) == 0) {
+				cargoRun(project);	
+			}
 		return null;
 	}
 
@@ -49,16 +53,19 @@ public class RustRunner extends AbstractHandler {
 		try {
 			String command = "";
 			
-			if(getOutDir() != null)
-				command = "rustc " + ProjectUtils.getMainFileLocation(project) + " --out-dir " + getOutDir();
+			if(getOutDir() != null) {
+				command = "rustc " + ProjectUtils.getMainFileLocation(project) + " --out-dir " 
+						+ project.getFolder(getOutDir()).getLocation().toString();
+				System.out.println(command);
+			}
 			else {
 				RustyclipsePlugin.getConsole().errorLog("Out directory could not be found. Please check Rust preferences.");
 				RustyclipsePlugin.getConsole().errorLog("Window -> Preferences -> Rust");
 				return -1;
 			}
 			
-			ByteArrayOutputStream out=new ByteArrayOutputStream();
-			ByteArrayOutputStream err=new ByteArrayOutputStream();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ByteArrayOutputStream err = new ByteArrayOutputStream();
 			
 			PumpStreamHandler handler = new PumpStreamHandler(out, err);
 			
@@ -83,10 +90,7 @@ public class RustRunner extends AbstractHandler {
 		try {
 			String command = "cargo compile";
 			
-			ByteArrayOutputStream out=new ByteArrayOutputStream();
-			ByteArrayOutputStream err=new ByteArrayOutputStream();
-			
-			PumpStreamHandler handler = new PumpStreamHandler(out, err);
+			PumpStreamHandler handler = new PumpStreamHandler();
 			
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
@@ -106,8 +110,36 @@ public class RustRunner extends AbstractHandler {
 		return -1;
 	}
 	
-	private void run(IProject project) {
-		
+	private int run(IProject project) {
+		try {
+			String OS = System.getProperty("os.name").toLowerCase();
+			String mainFile = project.getFolder(getOutDir()).getFile(ProjectUtils.getMainFileName(project)).getLocation().toString();
+			
+			String command = "";
+			
+			if(OS.contains("win"))
+				command = mainFile.substring(0, mainFile.length() - 3) + ".exe";
+			else if(OS.contains("unix") || OS.contains("mac")) 
+				command = ".\\" + mainFile.substring(0, mainFile.length() - 3); //Dunno if this works :>
+			else {
+				RustyclipsePlugin.getConsole().errorLog("Your operation system is not supported.");
+				return - 1;
+			}
+			
+			PumpStreamHandler handler = new PumpStreamHandler();
+
+			CommandLine cmdLine = CommandLine.parse(command);
+			DefaultExecutor exec = new DefaultExecutor();
+			exec.setStreamHandler(handler);
+			
+			int exitValue = exec.execute(cmdLine);
+			
+			return exitValue;
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	private void cargoRun(IProject project) {
@@ -115,7 +147,7 @@ public class RustRunner extends AbstractHandler {
 	}
 
 	private int getCompilationType(IProject project) {
-		if(project.getFile("Cargo.toml").exists()) {
+		if(!project.getFile("Cargo.toml").exists()) {
 			return CARGO;
 		} else {
 			return RUST;
@@ -124,17 +156,25 @@ public class RustRunner extends AbstractHandler {
 	
 	private String getOutDir() {
 		String args = prefStore.getString(RustPreferences.RUST_C_ARGS);
-		char[] returnValue = new char[15];
+		char[] returnValue;
 		if(args != null) {
 			if(args.contains("--out-dir")) {
-				int outDir = args.indexOf("--out-dir") + 2;
-				int endPoint = outDir + 1;
-					for(int i = 0; i < 15; i++) {
-						if(args.charAt(outDir) + i == ' ') {
-							endPoint = outDir + i;
-						}
+				int outDir = args.indexOf("--out-dir") + 10;
+				int endPoint = outDir + 2;
+				int counter = endPoint;
+				char[] spaceReturnValue;
+				for(char point : args.substring(endPoint).toCharArray()) {
+					counter += 1;
+					if(point == ' ') {
+						spaceReturnValue = new char[counter - outDir];
+						args.getChars(outDir, counter, spaceReturnValue, 0);
+						return new String(spaceReturnValue);
 					}
-				args.getChars(outDir, endPoint, returnValue, 0);
+				}
+				
+				returnValue = new char[counter - outDir];
+				args.getChars(outDir, counter, returnValue, 0);
+				
 				return new String(returnValue);
 			}
 		}
