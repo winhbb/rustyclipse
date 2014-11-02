@@ -1,5 +1,6 @@
 package org.rustyclipse.run;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.exec.CommandLine;
@@ -13,12 +14,17 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rustyclipse.RustBuilder;
+import org.rustyclipse.RustyclipsePlugin;
 import org.rustyclipse.ui.editors.RustEditor;
 import org.rustyclipse.ui.util.ProjectUtils;
 
 public class RustRunner extends AbstractHandler {
 	
 	RustBuilder builder = new RustBuilder();
+	
+	// The compilation types.
+	private final int RUST = 1;
+	private final int CARGO = 2;
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -27,7 +33,12 @@ public class RustRunner extends AbstractHandler {
 		IResource resource = (IResource) (editor.getEditorInput().getAdapter(IResource.class));
 		IProject project = resource.getProject();
 		
-		compile(project);
+		if(getCompilationType(project) == RUST)
+			if(compile(project) == 0)
+				run(project);
+		else
+			if(cargoCompile(project) == 0)
+				run(project);
 		return null;
 	}
 
@@ -36,11 +47,12 @@ public class RustRunner extends AbstractHandler {
 		
 			String command = "rustc " + ProjectUtils.getMainFileLocation(project) + " --out-dir " +
 					ProjectUtils.getBinFolder(project);
-			System.out.println(command);
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
 			int exitValue = exec.execute(cmdLine);
-		
+			
+			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
+			
 			return exitValue;
 		
 		} catch (IOException e) {
@@ -48,6 +60,42 @@ public class RustRunner extends AbstractHandler {
 		}
 		
 		return -1;
+	}
+	
+	private int cargoCompile(IProject project) {
+		try {
+			
+			String command = "cargo compile";
+			CommandLine cmdLine = CommandLine.parse(command);
+			DefaultExecutor exec = new DefaultExecutor();
+			exec.setWorkingDirectory(new File(project.getRawLocation().toString()));
+			int exitValue = exec.execute(cmdLine);
+			
+			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
+			
+			return exitValue;
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return -1;
+	}
+	
+	private void run(IProject project) {
+		
+	}
+	
+	private void cargoRun(IProject project) {
+		
+	}
+
+	private int getCompilationType(IProject project) {
+		if(project.getFile("Cargo.toml").exists()) {
+			return CARGO;
+		} else {
+			return RUST;
+		}
 	}
 	
 }
