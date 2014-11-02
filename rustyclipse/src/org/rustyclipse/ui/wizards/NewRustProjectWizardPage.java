@@ -114,6 +114,8 @@ public class NewRustProjectWizardPage extends WizardPage {
 		if(project != null) {
 			IProjectDescription desc = project.getWorkspace().newProjectDescription(project.getName());
 			try {
+				String binFolderLoc = "";
+				
 				project.create(desc, null);
 				
 				if(!project.isOpen())
@@ -122,10 +124,12 @@ public class NewRustProjectWizardPage extends WizardPage {
 				if(!project.getFolder("src").exists())
 					project.getFolder("src").create(false, true, null);
 				
-				binFolder = project.getFolder("bin");
-				if(!binFolder.exists())
-					project.getFolder("bin").create(false, true, null);
-				String binFolderLoc = binFolder.getLocation().toString();
+				if(useCargo.getSelection()) {
+					binFolder = project.getFolder("bin");
+					if(!binFolder.exists())
+						project.getFolder("bin").create(false, true, null);
+					binFolderLoc = binFolder.getLocation().toString();
+				}
 				
 				mainFile = project.getFolder("src").getFile("main.rs");
 				if(!mainFile.exists())
