@@ -1,26 +1,29 @@
 package org.rustyclipse.run;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.rustyclipse.RustBuilder;
 import org.rustyclipse.RustyclipsePlugin;
 import org.rustyclipse.ui.editors.RustEditor;
+import org.rustyclipse.ui.preferences.RustPreferences;
 import org.rustyclipse.ui.util.ProjectUtils;
 
 public class RustRunner extends AbstractHandler {
 	
-	RustBuilder builder = new RustBuilder();
+	IPreferenceStore prefStore = RustyclipsePlugin.getDefault().getPreferenceStore();
 	
 	// The compilation types.
 	private final int RUST = 1;
@@ -38,17 +41,31 @@ public class RustRunner extends AbstractHandler {
 				run(project);
 		else
 			if(cargoCompile(project) == 0)
-				run(project);
+				cargoRun(project);
 		return null;
 	}
 
 	private int compile(IProject project) {
 		try {
-		
-			String command = "rustc " + ProjectUtils.getMainFileLocation(project) + " --out-dir " +
-					ProjectUtils.getBinFolder(project);
+			String command = "";
+			
+			if(getOutDir() != null)
+				command = "rustc " + ProjectUtils.getMainFileLocation(project) + " --out-dir " + getOutDir();
+			else {
+				RustyclipsePlugin.getConsole().errorLog("Out directory could not be found. Please check Rust preferences.");
+				RustyclipsePlugin.getConsole().errorLog("Window -> Preferences -> Rust");
+				return -1;
+			}
+			
+			ByteArrayOutputStream out=new ByteArrayOutputStream();
+			ByteArrayOutputStream err=new ByteArrayOutputStream();
+			
+			PumpStreamHandler handler = new PumpStreamHandler(out, err);
+			
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
+			exec.setStreamHandler(handler);
+			
 			int exitValue = exec.execute(cmdLine);
 			
 			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
@@ -64,11 +81,18 @@ public class RustRunner extends AbstractHandler {
 	
 	private int cargoCompile(IProject project) {
 		try {
-			
 			String command = "cargo compile";
+			
+			ByteArrayOutputStream out=new ByteArrayOutputStream();
+			ByteArrayOutputStream err=new ByteArrayOutputStream();
+			
+			PumpStreamHandler handler = new PumpStreamHandler(out, err);
+			
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
 			exec.setWorkingDirectory(new File(project.getRawLocation().toString()));
+			exec.setStreamHandler(handler);
+			
 			int exitValue = exec.execute(cmdLine);
 			
 			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
@@ -96,6 +120,25 @@ public class RustRunner extends AbstractHandler {
 		} else {
 			return RUST;
 		}
+	}
+	
+	private String getOutDir() {
+		String args = prefStore.getString(RustPreferences.RUST_C_ARGS);
+		char[] returnValue = new char[15];
+		if(args != null) {
+			if(args.contains("--out-dir")) {
+				int outDir = args.indexOf("--out-dir") + 2;
+				int endPoint = outDir + 1;
+					for(int i = 0; i < 15; i++) {
+						if(args.charAt(outDir) + i == ' ') {
+							endPoint = outDir + i;
+						}
+					}
+				args.getChars(outDir, endPoint, returnValue, 0);
+				return new String(returnValue);
+			}
+		}
+		return null;
 	}
 	
 }
