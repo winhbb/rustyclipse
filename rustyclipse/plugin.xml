@@ -121,13 +121,6 @@
       </category>
    </extension>
    <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            class="org.rustyclipse.run.RustRunner"
-            commandId="rustyclipse.runrustcommand">
-      </handler>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.products">
       <product
             application="rustyclipse.product"

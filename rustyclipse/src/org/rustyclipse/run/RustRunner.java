@@ -96,7 +96,10 @@ public class RustRunner extends AbstractHandler {
 		try {
 			String command = "cargo build";
 			
-			PumpStreamHandler handler = new PumpStreamHandler();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+			
+			PumpStreamHandler handler = new PumpStreamHandler(outputStream, errorStream);
 			
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
@@ -105,7 +108,10 @@ public class RustRunner extends AbstractHandler {
 			
 			int exitValue = exec.execute(cmdLine);
 			
-			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
+			RustyclipsePlugin.getConsole().log(outputStream.toString());
+			RustyclipsePlugin.getConsole().errorLog(errorStream.toString());
+			
+			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue + "\n");
 			
 			return exitValue;
 		
@@ -151,12 +157,34 @@ public class RustRunner extends AbstractHandler {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
+			return -1;
 		}
-		return -1;
 	}
 	
-	private void cargoRun(IProject project) {
+	private int cargoRun(IProject project) {
+		try {
+			String command = "cargo run";
 		
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+			
+			PumpStreamHandler handler = new PumpStreamHandler(outputStream, errorStream);
+			
+			CommandLine cmdLine = CommandLine.parse(command);
+			DefaultExecutor exec = new DefaultExecutor();
+			exec.setStreamHandler(handler);
+			exec.setWorkingDirectory(new File(project.getLocation().toString()));
+
+			int exitValue = exec.execute(cmdLine);
+			
+			RustyclipsePlugin.getConsole().log(outputStream.toString());
+			RustyclipsePlugin.getConsole().errorLog(errorStream.toString());
+			
+			return exitValue;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
 	private int getCompilationType(IProject project) {
