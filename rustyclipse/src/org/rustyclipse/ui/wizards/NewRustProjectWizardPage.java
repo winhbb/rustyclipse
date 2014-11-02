@@ -173,16 +173,19 @@ public class NewRustProjectWizardPage extends WizardPage {
 			.append("name = \"" + projectName.getText() + "\"")
 			.append("\n")
 			.append("version = \"" + version.getText() + "\"")
+			.append("\n")
+			.append("authors = [\"Author Name <AuthorsEmail@gmail.com>\"]")
 			.append("\n");
 		if(createReadme.getSelection()) {
 			content.append("readme = \"" + createReadme() + "\"");
+			content.append("\n\n");
 		}
-		content.append("\n\n")
+		content.append("\n")
 			.append("[[bin]]")
 			.append("\n\n")
 			.append("name = \"" + "main" + "\"")
 			.append("\n")
-			.append("path = \"" + RustyclipsePlugin.getDefault().getPreferenceStore().getString("mainFile") + "\"");
+			.append("path = \"" + "src/main.rs" + "\"");
 		return new ByteArrayInputStream(content.toString().getBytes());
 	}
 	

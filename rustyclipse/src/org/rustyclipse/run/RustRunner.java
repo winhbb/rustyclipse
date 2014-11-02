@@ -1,10 +1,8 @@
 package org.rustyclipse.run;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -38,12 +36,16 @@ public class RustRunner extends AbstractHandler {
 		IResource resource = (IResource) (editor.getEditorInput().getAdapter(IResource.class));
 		IProject project = resource.getProject();
 		
+		RustyclipsePlugin.getConsole().wipeLog();
+		
 		if(getCompilationType(project) == RUST) {
 			if(compile(project) == 0) {
+				System.out.println("magicka");
 				run(project);	
 			}
 		} else if(getCompilationType(project) == CARGO) {
 			if(cargoCompile(project) == 0) {
+				System.out.println("magic2ka");
 				cargoRun(project);	
 			}
 		}
@@ -75,6 +77,9 @@ public class RustRunner extends AbstractHandler {
 			exec.setStreamHandler(handler);
 			
 			int exitValue = exec.execute(cmdLine);
+			
+			RustyclipsePlugin.getConsole().log(out.toString());
+			RustyclipsePlugin.getConsole().errorLog(err.toString());
 			
 			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
 			
@@ -114,12 +119,12 @@ public class RustRunner extends AbstractHandler {
 	private int run(IProject project) {
 		try {
 			String OS = System.getProperty("os.name").toLowerCase();
-			String mainFile = project.getFolder(getOutDir()).getFile(ProjectUtils.getMainFileName(project)).getLocation().toString();
+			String mainFile = project.getFolder(getOutDir()).getFile(ProjectUtils.getMainFileName(project)).getName();
 			
 			String command = "";
 			
 			if(OS.contains("win"))
-				command = mainFile.substring(0, mainFile.length() - 3) + ".exe";
+				command = "cmd /c " + mainFile.substring(0, mainFile.length() - 3) + ".exe";
 			else if(OS.contains("unix") || OS.contains("mac")) 
 				command = ".\\" + mainFile.substring(0, mainFile.length() - 3); //Dunno if this works :>
 			else {
@@ -127,13 +132,20 @@ public class RustRunner extends AbstractHandler {
 				return - 1;
 			}
 			
-			PumpStreamHandler handler = new PumpStreamHandler();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+			
+			PumpStreamHandler handler = new PumpStreamHandler(outputStream, errorStream);
 
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
 			exec.setStreamHandler(handler);
+			exec.setWorkingDirectory(new File(project.getFolder(getOutDir()).getLocation().toString()));
 			
 			int exitValue = exec.execute(cmdLine);
+			
+			RustyclipsePlugin.getConsole().log(outputStream.toString());
+			RustyclipsePlugin.getConsole().errorLog(errorStream.toString());
 			
 			return exitValue;
 			
