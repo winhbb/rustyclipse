@@ -43,6 +43,21 @@ public class ProjectUtils {
 				ProjectConstants.PROJECT_MAIN_FILE_LOCATION_DEFAULT);
 	}
 	
+	public static final void setBinFolder(IProject project, String folder) {
+		ProjectScope scope = new ProjectScope(project);
+		IEclipsePreferences node = scope.getNode(RustProjectNature.NATURE_ID);
+		String binFolder = ProjectConstants.PROJECT_BIN_FOLDER_LOCATION;
+		node.put(binFolder, folder);
+		saveNode(node);
+	}
+	
+	public static final String getBinFolder(IProject project) {
+		ProjectScope scope = new ProjectScope(project);
+		IEclipsePreferences node = scope.getNode(RustProjectNature.NATURE_ID);
+		return node.get(ProjectConstants.PROJECT_BIN_FOLDER_LOCATION,
+						ProjectConstants.PROJECT_BIN_FOLDER_LOCATION_DEFAULT);
+	}
+	
 	private static void saveNode(IEclipsePreferences node) {
 		if(node != null)
 			try {

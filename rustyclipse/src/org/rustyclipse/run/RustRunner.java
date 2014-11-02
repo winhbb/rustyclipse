@@ -2,117 +2,52 @@ package org.rustyclipse.run;
 
 import java.io.IOException;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.rustyclipse.RustyclipsePlugin;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.texteditor.ITextEditor;
+import org.rustyclipse.RustBuilder;
+import org.rustyclipse.ui.editors.RustEditor;
+import org.rustyclipse.ui.util.ProjectUtils;
 
 public class RustRunner extends AbstractHandler {
-
+	
+	RustBuilder builder = new RustBuilder();
+	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		try {
-			String[] cmd = new String[3];
-			String OS = System.getProperty("os.name").toLowerCase();
-			
-			if(OS.contains("win")) {
-				cmd[0] = "";
-			}
-			
-		} catch(Throwable t) {
-			t.printStackTrace();
-		}
+		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+		RustEditor editor = (RustEditor) (window.getActivePage().getActiveEditor().getAdapter(ITextEditor.class));
+		IResource resource = (IResource) (editor.getEditorInput().getAdapter(IResource.class));
+		IProject project = resource.getProject();
+		
+		compile(project);
 		return null;
 	}
 
-	private String findExecutable() {
-		String outDir = "";
-		
-		IPreferenceStore prefStore = RustyclipsePlugin.getDefault().getPreferenceStore();
-		String[] runtimeArgs = prefStore.getString("RUST_C_ARGS").split(" ");
-		
-		for(int i = 0; i < runtimeArgs.length; i++) {
-			if(runtimeArgs[i] == "--output-dir") {
-				outDir = runtimeArgs[i + 1];
-				break;
-			}
-		}
-		
-		if(!outDir.isEmpty()) {
-			try {
-				IResource[] executable = RustyclipsePlugin.getActiveProject().getFolder(outDir).members();
-				IResource[] executables = new IResource[executable.length];
-				int count = 0;
-				for(int i = 0; i < executable.length; i++) {
-					count++;
-					if(executable[i].getFileExtension() == ".exe") {
-						executables[i] = executable[i];
-						break;
-					}
-				}
-				if(executables.length > 0) {
-					RustyclipsePlugin.getConsole().errorLog("There can only be one executable in output dir.");
-				} else {
-					return executables[count].getName();
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return null;
-		
-	}
-	
-	public static void run() {
+	private int compile(IProject project) {
 		try {
-			compile();
-		} catch (IOException | InterruptedException e) {
+		
+			String command = "rustc " + ProjectUtils.getMainFileLocation(project) + " --out-dir " +
+					ProjectUtils.getBinFolder(project);
+			System.out.println(command);
+			CommandLine cmdLine = CommandLine.parse(command);
+			DefaultExecutor exec = new DefaultExecutor();
+			int exitValue = exec.execute(cmdLine);
+		
+			return exitValue;
+		
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private static boolean compile() throws IOException, InterruptedException {
-		IFile mainFile = RustyclipsePlugin.getActiveProject().getFolder("src").getFile("main.rs");
-		if(mainFile != null) {
-			String[] cmd = new String[3];
-			String OS = System.getProperty("os.name").toLowerCase();
-			
-			if(OS.contains("win")) {
-				cmd[0] = "rustc";
-				cmd[1] = mainFile.getLocation().toString();
-				cmd[2] = "";
-			}
-			Runtime rt = Runtime.getRuntime();
-			Process proc = rt.exec(cmd);
-			
-			ProcessLogger eLogger = new ProcessLogger(proc.getErrorStream(), true);
-			ProcessLogger oLogger = new ProcessLogger(proc.getInputStream(), false);
-			
-			eLogger.start();
-			oLogger.start();
-			
-			if(proc.waitFor() == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private static boolean compileCargo() {
-		IFile cargoFile = RustyclipsePlugin.getActiveProject().getFile("Cargo.toml");
-		if(!cargoFile.exists()) {
-			RustyclipsePlugin.getConsole().errorLog("You fucked up");
-			return false;
-		}
 		
-		return false;
+		return -1;
 	}
 	
 }

@@ -6,7 +6,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.rustyclipse.run.RustRunner;
 
 public class RustBuilder extends IncrementalProjectBuilder {
 
@@ -18,10 +17,8 @@ public class RustBuilder extends IncrementalProjectBuilder {
 			case INCREMENTAL_BUILD | AUTO_BUILD:
 				return null;
 			case CLEAN_BUILD | FULL_BUILD:
-				RustRunner.run();
 				return null;
 		}
 		return null;
 	}
-
 }

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -35,6 +36,7 @@ public class NewRustProjectWizardPage extends WizardPage {
 	
 	private static IProject project;
 	private IFile mainFile;
+	private IFolder binFolder;
 	
 	public NewRustProjectWizardPage() {
 		super("New Rust project");
@@ -120,13 +122,15 @@ public class NewRustProjectWizardPage extends WizardPage {
 				if(!project.getFolder("src").exists())
 					project.getFolder("src").create(false, true, null);
 				
-				if(!project.getFolder("bin").exists())
+				binFolder = project.getFolder("bin");
+				if(!binFolder.exists())
 					project.getFolder("bin").create(false, true, null);
+				String binFolderLoc = binFolder.getLocation().toString();
 				
 				mainFile = project.getFolder("src").getFile("main.rs");
 				if(!mainFile.exists())
 					mainFile.create(createMainFile(), false, null);
-				RustyclipsePlugin.getDefault().getPreferenceStore().putValue("mainFile", "/src/main.rs");
+				String mainFileLoc = mainFile.getLocation().toString();
 				
 				if(useCargo.getSelection())
 					if(!project.getFile("Cargo.toml").exists())
@@ -134,8 +138,9 @@ public class NewRustProjectWizardPage extends WizardPage {
 				
 				RustProjectNature.addNature(project);
 				
-				ProjectUtils.setMainFileLocation(project, "/src/main.rs");
+				ProjectUtils.setMainFileLocation(project, mainFileLoc);
 				ProjectUtils.setProjectName(project, projectName.getText());
+				ProjectUtils.setBinFolder(project, binFolderLoc);
 				
 				return true;
 			} catch(CoreException e) {
@@ -149,8 +154,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 	
 	private InputStream createMainFile() {
 		StringBuilder content = new StringBuilder()
-			.append("mod main;")
-			.append("\n\n")
 			.append("fn main() {")
 			.append("\n")
 			.append("	println!(\"Hello World!\");")

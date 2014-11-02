@@ -13,3 +13,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console;bundle-version="3.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/commons-exec-1.2.jar

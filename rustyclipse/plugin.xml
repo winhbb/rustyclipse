@@ -117,7 +117,7 @@
       <command
             categoryId="rustyclipse.commands.category"
             defaultHandler="org.rustyclipse.run.RustRunner"
-            description="Run and compile the project"
+            description="Run &amp; Compile"
             id="rustyclipse.runrustcommand"
             name="Run Rust">
       </command>
@@ -168,15 +168,9 @@
             name="Rust"
             objectClass="org.eclipse.core.resources.IProject">
          <enabledWhen>
-            <iterate
-                  operator="or">
-               <instanceof
-                     value="org.eclipse.core.resources.IProjectNature">
-               </instanceof>
-               <instanceof
-                     value="org.eclipse.core.resources.IProject">
-               </instanceof>
-            </iterate>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+            </adapt>
          </enabledWhen>
       </page>
    </extension>
