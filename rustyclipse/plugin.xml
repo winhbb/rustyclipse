@@ -26,13 +26,6 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="rustyclipse.rustperspective">
-         <view
-               id="rustyclipse.consoleview"
-               minimized="false"
-               relationship="stack"
-               relative="org.eclipse.ui.RustConsoleView"
-               visible="true">
-         </view>
       </perspectiveExtension>
    </extension>
    <extension
@@ -131,7 +124,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="org.rustyclipse.run.RustRunner"
-            commandId="rustyclipse.runrust">
+            commandId="rustyclipse.runrustcommand">
       </handler>
    </extension>
    <extension
@@ -165,8 +158,7 @@
       <page
             class="org.rustyclipse.ui.preferences.ProjectPropertyPage"
             id="rustyclipse.projectpropertypage"
-            name="Rust"
-            objectClass="org.eclipse.core.resources.IProject">
+            name="Rust">
          <enabledWhen>
             <adapt
                   type="org.eclipse.core.resources.IProject">

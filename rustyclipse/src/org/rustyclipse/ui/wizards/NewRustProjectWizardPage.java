@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rustyclipse.RustProjectNature;
-import org.rustyclipse.RustyclipsePlugin;
 import org.rustyclipse.ui.util.ProjectUtils;
 public class NewRustProjectWizardPage extends WizardPage {
 
