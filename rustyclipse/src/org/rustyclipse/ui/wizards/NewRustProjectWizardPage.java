@@ -31,7 +31,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 	private static Text projectName;
 	
 	private static Button useCargo;
-	private static Button createReadme;
 	
 	private static IProject project;
 	private IFile mainFile;
@@ -98,12 +97,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 
 			}
 		});
-		
-		createReadme = new Button(container, SWT.CHECK);
-		createReadme.setLayoutData(gridData);
-		createReadme.setText("Create Readme");
-		createReadme.setToolTipText("Creates a readme file for cargo to use.");
-		createReadme.setSelection(false);
 		
 		dialogChanged();
 		setControl(container);
@@ -174,37 +167,13 @@ public class NewRustProjectWizardPage extends WizardPage {
 			.append("version = \"" + version.getText() + "\"")
 			.append("\n")
 			.append("authors = [\"Author Name <AuthorsEmail@gmail.com>\"]")
-			.append("\n");
-		if(createReadme.getSelection()) {
-			content.append("readme = \"" + createReadme() + "\"");
-			content.append("\n\n");
-		}
-		content.append("\n")
+			.append("\n\n")
 			.append("[[bin]]")
 			.append("\n\n")
 			.append("name = \"" + "main" + "\"")
 			.append("\n")
 			.append("path = \"" + "src/main.rs" + "\"");
 		return new ByteArrayInputStream(content.toString().getBytes());
-	}
-	
-	private InputStream readmeStream() {
-		StringBuilder builder = new StringBuilder()
-			.append(projectName.getText());
-		return new ByteArrayInputStream(builder.toString().getBytes());
-	}
-	
-	private String createReadme() {
-		String readmeString = "README.md";
-		IFile readmeFile = project.getFile(readmeString);
-		
-		if(!readmeFile.exists())
-			try {
-				readmeFile.create(readmeStream(), false, null);
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		return readmeString;
 	}
 
 	private void dialogChanged() {
@@ -213,12 +182,6 @@ public class NewRustProjectWizardPage extends WizardPage {
 			updateStatus("Project name can't be empty.");
 		} else if(project.getWorkspace().getRoot().getProject(projectName.getText()).exists()) {
 			updateStatus("Project already exists.");
-		}
-		
-		if(useCargo.getSelection()) {
-			createReadme.setEnabled(true);
-		} else if(!useCargo.getSelection()) {
-			createReadme.setEnabled(false);
 		}
 		
 		updateStatus(null);

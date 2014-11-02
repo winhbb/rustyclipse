@@ -40,12 +40,10 @@ public class RustRunner extends AbstractHandler {
 		
 		if(getCompilationType(project) == RUST) {
 			if(compile(project) == 0) {
-				System.out.println("magicka");
 				run(project);	
 			}
 		} else if(getCompilationType(project) == CARGO) {
 			if(cargoCompile(project) == 0) {
-				System.out.println("magic2ka");
 				cargoRun(project);	
 			}
 		}
@@ -124,6 +122,8 @@ public class RustRunner extends AbstractHandler {
 	
 	private int run(IProject project) {
 		try {
+			RustyclipsePlugin.getConsole().log("Running project.");
+			
 			String OS = System.getProperty("os.name").toLowerCase();
 			String mainFile = project.getFolder(getOutDir()).getFile(ProjectUtils.getMainFileName(project)).getName();
 			

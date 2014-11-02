@@ -12,10 +12,6 @@ public class RustMessageConsole {
 	private static MessageConsole instance;
 	private static MessageConsoleStream messageStream;
 	
-	//private static Color black = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-	//private static Color red = Display.getDefault().getSystemColor(SWT.COLOR_RED);
-	//private static Color yellow = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-	
 	private MessageConsole getInstance() {
 		return instance;
 	}
@@ -34,18 +30,15 @@ public class RustMessageConsole {
 	}
 	
 	public void log(String message) {
-		//messageStream.setColor(black);
-		messageStream.println(message);
+		messageStream.println("<LOG> " + message);
 	}
 	
 	public void errorLog(String message) {
-		//messageStream.setColor(red);
-		messageStream.println(message);
+		messageStream.println("<ERROR> " + message);
 	}
 	
 	public void warningLog(String message) {
-		//messageStream.setColor(yellow);
-		messageStream.println(message);
+		messageStream.println("<WARNING> " + message);
 	}
 	
 	public void closeMessageStream() {
