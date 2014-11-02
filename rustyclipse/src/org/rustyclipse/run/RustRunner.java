@@ -65,10 +65,10 @@ public class RustRunner extends AbstractHandler {
 				return -1;
 			}
 			
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			ByteArrayOutputStream err = new ByteArrayOutputStream();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 			
-			PumpStreamHandler handler = new PumpStreamHandler(out, err);
+			PumpStreamHandler handler = new PumpStreamHandler(outputStream, errorStream);
 			
 			CommandLine cmdLine = CommandLine.parse(command);
 			DefaultExecutor exec = new DefaultExecutor();
@@ -76,8 +76,10 @@ public class RustRunner extends AbstractHandler {
 			
 			int exitValue = exec.execute(cmdLine);
 			
-			RustyclipsePlugin.getConsole().log(out.toString());
-			RustyclipsePlugin.getConsole().errorLog(err.toString());
+			if(outputStream.toString().length() > 13)
+				RustyclipsePlugin.getConsole().log(outputStream.toString());
+			if(errorStream.toString().length() > 13)
+				RustyclipsePlugin.getConsole().errorLog(errorStream.toString());
 			
 			RustyclipsePlugin.getConsole().log("Compilation exited with the following value: " + exitValue);
 			
@@ -122,7 +124,7 @@ public class RustRunner extends AbstractHandler {
 	
 	private int run(IProject project) {
 		try {
-			RustyclipsePlugin.getConsole().log("Running project.");
+			RustyclipsePlugin.getConsole().log("Running project.\n");
 			
 			String OS = System.getProperty("os.name").toLowerCase();
 			String mainFile = project.getFolder(getOutDir()).getFile(ProjectUtils.getMainFileName(project)).getName();
@@ -149,10 +151,10 @@ public class RustRunner extends AbstractHandler {
 			exec.setWorkingDirectory(new File(project.getFolder(getOutDir()).getLocation().toString()));
 			
 			int exitValue = exec.execute(cmdLine);
-			
+
 			RustyclipsePlugin.getConsole().log(outputStream.toString());
 			RustyclipsePlugin.getConsole().errorLog(errorStream.toString());
-			
+
 			return exitValue;
 			
 		} catch (IOException e) {
