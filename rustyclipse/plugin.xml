@@ -159,5 +159,13 @@
          </enabledWhen>
       </page>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="org.rustyclipse.RustLaunchConfigurationDelegate"
+            id="rustyclipse.launchdelegate"
+            name="Launch Delegate">
+      </launchDelegate>
+   </extension>
 
 </plugin>
